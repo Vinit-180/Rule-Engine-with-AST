@@ -4,8 +4,15 @@ from pymongo import MongoClient
 from bson import ObjectId
 from models import Node
 import utils
+from flask_cors import CORS
+
 app=Flask(__name__)
-app.config.from_object(Config)
+# app.config.from_object(Config)
+# CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all origins for API routes
+# app.config['CORS_HEADERS'] = 'Content-Type'
+
+
 mongo=MongoClient(Config.MONGO_DATABASE_URI)
 db=mongo['rule_engine']
 rules=db['rules']
@@ -14,19 +21,20 @@ rules=db['rules']
 def get_home():
     return jsonify({"data":"HI"}),200
 
-@app.route("/api/create_rule",methods=['POST'])
+@app.route("/api/rules/create_rule",methods=['POST'])
 def create_rule():
     rule_string=request.json.get("rule")
     if not rule_string:
         return jsonify({"error":"Rule String not found"}),400
     try:
         rule_ast=utils.create_rule(rule_string)
-        rule_id=rules.insert_one(rule_ast)
+        rule_id=rules.insert_one({"rule_ast": rule_ast, "rule_string": rule_string})
+        # rule_id=rules.insert_one(rule_ast)
         return jsonify({"message":"Rule created successfully","data":str(rule_id)}),200
     except Exception as e:
         return jsonify({"error",str(e)}),500
 
-@app.route("/api/evaluate_rule",methods=['POST'])
+@app.route("/api/rules/evaluate_rule",methods=['POST'])
 def evaluate_rule():
     rule_id=request.args.get("rule_id")
     data=request.json.get("data")
@@ -46,7 +54,7 @@ def evaluate_rule():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/combine_rules",methods=['POST'])
+@app.route("/api/rules/combine_rules",methods=['POST'])
 def combine_rules():
     data=request.json.get("data")
     if not data:
