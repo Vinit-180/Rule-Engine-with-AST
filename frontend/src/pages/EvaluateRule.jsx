@@ -1,5 +1,7 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+import swal from 'sweetalert';
+import SubmitButton from '../components/SubmitButton';
 
 const EvaluateRule = () => {
     const [age, setAge] = useState('');
@@ -24,7 +26,7 @@ const EvaluateRule = () => {
   useEffect(() => {
     getRules();
   }, []);
-    const handleSubmit = async (e) => {
+    const handleSubmit =  (e) => {
         e.preventDefault();
           const data = {
             age: parseInt(age, 10),
@@ -32,14 +34,26 @@ const EvaluateRule = () => {
             department: department,
             experience: parseInt(experience, 10),
           };
-        //   console.log('Sending request body:', { ruleId: rule, data });
-        //   const result = await evaluateRule(rule, data);
         axios.post(`http://127.0.0.1:5000/api/rules/evaluate_rule?rule_id=${rule}`,{"data":data}).then((data)=>{
             console.log(data);
+            if(data.data.result)
+            {            swal({
+              title: "Hurrah!",
+              text: "Your rule evaluated successfully!!", // Updated success message
+              icon: "success",
+            });
+          }
+            else
+            {swal({
+              title: "Oops!",
+              text: "Your rule evaluation failed. Please check your inputs and try again.",
+              icon: "error",
+            });}
+            setError('');
             // setData(data);
         }).catch((err)=>{
             console.log(err);
-            // setError(err);
+            setError("Facing some Errors to evaluate your rule. Please check the format again ");
         })
 
       };
@@ -64,7 +78,7 @@ const EvaluateRule = () => {
           >
             <option value="" disabled>Select a Rule ID</option>
             {rules?.map((item) => (
-              <option key={item._id} value={item._id}>
+              <option key={item._id} value={item?._id}>
                 {item?.rule_string} {item?._id}</option>
             ))}
           </select>
@@ -81,74 +95,8 @@ const EvaluateRule = () => {
                 />
             </div>
         ))}
-        {/* <div className="flex flex-col">
-          <label className="mb-1 text-lg font-semibold text-gray-700">Age</label>
-          <input
-            className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-            type="number"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            placeholder="Enter age"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="mb-1 text-lg font-semibold text-gray-700">Department</label>
-          <input
-            className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-            type="text"
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            placeholder="Enter department"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="mb-1 text-lg font-semibold text-gray-700">Salary</label>
-          <input
-            className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-            type="number"
-            value={salary}
-            onChange={(e) => setSalary(e.target.value)}
-            placeholder="Enter salary"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="mb-1 text-lg font-semibold text-gray-700">Experience</label>
-          <input
-            className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-            type="number"
-            value={experience}
-            onChange={(e) => setExperience(e.target.value)}
-            placeholder="Enter experience"
-          />
-        </div> */}
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white p-3 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform transform hover:scale-105"
-        >
-          Evaluate Rule
-        </button>
+        <SubmitButton  text={"Evaluate Rule"} />       
       </form>
-
-        
-      {/* {response && (
-        <pre className='bg-green-100 text-green-800 p-4 rounded-md font-semibold border border-green-200 mt-4'>
-        <div>
-      {response.result === true ? (
-        <div>You are Eligible</div>
-      ) : (
-        <div>You are not eligible</div>
-      )}
-    </div>
-
-        </pre>
-      )}
-       */}
-    
-
 
       {error && <div className="text-red-500 mt-4 text-center text-lg">Error: {error}</div>}
     </div>

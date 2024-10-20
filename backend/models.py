@@ -20,7 +20,11 @@ class Node:
             return None
         # left=Node.from_dict(data.get('left'))
         # right=Node.from_dict(data.get('right'))
-        left = Node.from_dict(data.get('left')) if data.get('left') else None
-        right = Node.from_dict(data.get('right')) if data.get('right') else None
-
-        return Node(type=data['type'],value=data['value'],left=left,right=right)
+        try:
+            left = Node.from_dict(data.get('left')) if data.get('left') else None
+            right = Node.from_dict(data.get('right')) if data.get('right') else None
+            print(data)
+            return Node(type=data['type'],value=data['value'],left=left,right=right)
+        except Exception as e:
+            print(e)
+            raise Exception(e)

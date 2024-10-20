@@ -15,7 +15,8 @@ const Navbar = () => {
         
         <Link 
                 to="/" 
-                className="flex items-center space-x-3 rtl:space-x-reverse">
+                className="flex items-center space-x-3 rtl:space-x-reverse"
+                onClick={() => setActiveItem('')} >
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Rule Engine</span>
               </Link>
         <button

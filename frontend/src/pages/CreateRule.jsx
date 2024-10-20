@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import axios from "axios";
 import swal from 'sweetalert';
+import SubmitButton from '../components/SubmitButton';
 
 const CreateRule = () => {
     const [rule,setRule]=useState();
@@ -19,13 +20,17 @@ const CreateRule = () => {
                 text: data.data.message,
                 icon: "success",
               });
+              setData(data.data);
+              setError('')
         }).catch((err)=>{
             swal({
                 title:"Oh",
-                text:"Error",
+                text:"Error: Rule not created",
                 icon:"warning",
             })
+            setData('');
             console.log(err);
+            setError("Facing some Errors to create your rule. Please check the format again ");
         })
     }
   return (
@@ -43,22 +48,15 @@ const CreateRule = () => {
           />
         </div>
 
-        <button
-          type="submit"
-          className="bg-green-500 text-white p-4 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-transform transform hover:scale-105"
-        >
-          Create Rule
-        </button>
+        <SubmitButton  text={"Create Rule"} />
+
       </form>
 
       {data && (
         <div className='bg-green-100 text-green-800 p-4 rounded-md font-semibold border border-green-200 mt-4'>
-       
-          {data.ruleString ? (
-            <div>Rule created successfully</div>
-          ) : (
-            <div>Rule not created</div>
-          )}
+       <div>
+          {data.message}
+        </div>
         </div>
       )}
 
