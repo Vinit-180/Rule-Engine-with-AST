@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import SubmitButton from '../components/SubmitButton';
-
+import swal from 'sweetalert';
 const CombineRules = () => {
     const [ruleStrings, setRuleStrings] = useState('');
   const [response, setResponse] = useState(null);
@@ -12,11 +12,21 @@ const CombineRules = () => {
     console.log(rulesArray);
     axios.post(`http://127.0.0.1:5000/api/rules/combine_rules`,{"data":rulesArray}).then((data)=>{
         console.log(data);
+        swal({
+          title: "Hurrah!",
+          text: data.data.message,
+          icon: "success",
+        });
         // setData(data);
+        setError('');
     }).catch((err)=>{
         console.log(err);
-        
-        // setError(err);
+        swal({
+          title:"Oh",
+          text:"Error: Rule not created",
+          icon:"warning",
+      })
+        setError(err);
     })
 
   };
